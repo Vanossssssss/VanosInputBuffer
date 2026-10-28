@@ -1,0 +1,49 @@
+
+name: Build Vanos Input Buffer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download buffer mod source
+        shell: pwsh
+        run: |
+          git clone --depth 1 https://github.com/Lyoph/GMD-Buffer-Mod.git upstream
+          if ($LASTEXITCODE -ne 0) { throw "Source download failed" }
+
+      - name: Apply Vanos branding
+        shell: pwsh
+        run: |
+          $path = "upstream/mod.json"
+          $mod = Get-Content $path -Raw | ConvertFrom-Json
+          $mod.id = "vanos.inputbuffer"
+          $mod.name = "Vanos Input Buffer"
+          $mod.version = "v1.0.0"
+          $mod.developer = "Vanos"
+          $mod.description = "Input buffering for Geometry Dash, based on GMD-Buffer-Mod."
+          $mod | ConvertTo-Json -Depth 100 | Set-Content $path -Encoding utf8
+
+      - name: Build Geode mod
+        id: build
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          path: upstream
+          target: Win64
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vanos-Input-Buffer-Windows
+          path: upstream/**/*.geode
+          if-no-files-found: error
