@@ -1,0 +1,6 @@
+Vanos Input Buffer build recipe
+
+The source implementation is fetched from:
+https://github.com/Lyoph/GMD-Buffer-Mod
+
+The upstream project is licensed under the MIT License. Its source and license/attribution are retained during the build. This package contains a workflow and instructions, not the upstream source itself or a compiled .geode binary.
